@@ -34,10 +34,11 @@ function prepare_directories {
 }
 
 function increment_version_number {
-    echo "Not implemented"
-    exit 
+    release_level=$1
 
-    ./bump_package_version.py {{ release_level }}    
+    cd ${FRAMEWORK_DIR}
+    ${LIB_DIR}/bump_package_version.py ${release_level}
+    cd -
 }
 
 function add_version_tag {

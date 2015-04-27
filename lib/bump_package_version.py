@@ -9,7 +9,7 @@ package.json.
 import argparse
 
 # Local
-from lib.helpers import update_version
+from helpers import update_version
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
