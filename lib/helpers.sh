@@ -1,9 +1,43 @@
 #!/usr/bin/env bash
 
+# All script in here should make use of:
+# - ${FRAMEWORK_DIR}
+# - ${HOMEPAGE_DIR}
+# - ${UPLOADER_DIR}
+# - ${LIB_DIR}
+
+function update_git_dir {
+    # Update a git dir, either by cloning it or pulling changes down
+    # Usage:
+    # update_dir ${dir_path} ${git_url} ${branch}
+
+    dir_path=$1
+    git_url=$2
+    branch=$3
+
+    git clone ${git_url} ${dir_path} || (
+        git -C ${dir_path} fetch origin \
+        && git -C ${dir_path} reset --hard origin/${branch}
+    )
+}
+
+function prepare_directories {
+    # Prepare the three directories for the build
+    # prepare_directories ${framework_repo} ${uploader_repo}
+
+    framework_repo=$1
+    uploader_repo=$2
+
+    update_git_dir ${FRAMEWORK_DIR} ${framework_repo} master
+    update_git_dir ${HOMEPAGE_DIR} ${framework_repo} gh-pages
+    update_git_dir ${UPLOADER_DIR} ${uploader_repo} master
+}
+
 function increment_version_number {
     echo "Not implemented"
-    exit 1
-    
+    exit 
+
+    ./bump_package_version.py {{ release_level }}    
 }
 
 function add_version_tag {
@@ -59,16 +93,6 @@ function update_docs {
     git -C gh-pages add .
     git -C gh-pages commit -m "jenkins.ubuntu.com: Auto-generate docs for release v${VERSION}"
     git -C gh-pages push origin gh-pages
-}
-
-function publish_docs {
-    echo "Not implemented"
-    exit 1
-
-    # Publish documents
-    git clone git@github.com:ubuntudesign/vanilla-framework.git project-dir
-    ./bump_package_version.py {{ release_level }}
-    npm publish project-dir
 }
 
 function update_project_homepage {
