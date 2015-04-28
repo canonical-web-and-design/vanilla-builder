@@ -23,14 +23,14 @@ function update_git_dir {
 
 function prepare_directories {
     # Prepare the three directories for the build
-    # prepare_directories ${framework_repo} ${uploader_repo}
+    # prepare_directories ${framework_repository} ${uploader_repository}
 
-    framework_repo=$1
-    uploader_repo=$2
+    framework_repository=$1
+    uploader_repository=$2
 
-    update_git_dir ${FRAMEWORK_DIR} ${framework_repo} master
-    update_git_dir ${HOMEPAGE_DIR} ${framework_repo} gh-pages
-    update_git_dir ${UPLOADER_DIR} ${uploader_repo} master
+    update_git_dir ${FRAMEWORK_DIR} ${framework_repository} master
+    update_git_dir ${HOMEPAGE_DIR} ${framework_repository} gh-pages
+    update_git_dir ${UPLOADER_DIR} ${uploader_repository} master
 }
 
 function increment_version_number {
