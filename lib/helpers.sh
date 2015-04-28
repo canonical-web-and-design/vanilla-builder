@@ -23,21 +23,22 @@ function update_git_dir {
 
 function prepare_directories {
     # Prepare the three directories for the build
-    # prepare_directories ${framework_repo} ${uploader_repo}
+    # prepare_directories ${framework_repository} ${uploader_repository}
 
-    framework_repo=$1
-    uploader_repo=$2
+    framework_repository=$1
+    uploader_repository=$2
 
-    update_git_dir ${FRAMEWORK_DIR} ${framework_repo} master
-    update_git_dir ${HOMEPAGE_DIR} ${framework_repo} gh-pages
-    update_git_dir ${UPLOADER_DIR} ${uploader_repo} master
+    update_git_dir ${FRAMEWORK_DIR} ${framework_repository} master
+    update_git_dir ${HOMEPAGE_DIR} ${framework_repository} gh-pages
+    update_git_dir ${UPLOADER_DIR} ${uploader_repository} master
 }
 
 function increment_version_number {
-    echo "Not implemented"
-    exit 
+    release_level=$1
 
-    ./bump_package_version.py {{ release_level }}    
+    cd ${FRAMEWORK_DIR}
+    ${LIB_DIR}/bump_package_version.py ${release_level}
+    cd -
 }
 
 function add_version_tag {
