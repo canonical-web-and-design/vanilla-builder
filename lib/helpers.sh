@@ -62,8 +62,9 @@ function add_version_tag {
 }
 
 function npm_publish {
-    echo "Not implemented"
-    exit 1
+    cd ${FRAMEWORK_DIR}
+    npm publish
+    cd -
 }
 
 function compile_css {
