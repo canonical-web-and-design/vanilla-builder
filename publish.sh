@@ -18,8 +18,8 @@ export ASSETS_URL=https://162.213.32.143/v1/
 
 prepare_directories git@github.com:nottrobin/vanilla-framework.git
 version=$(increment_npm_version ${RELEASE_LEVEL} | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
+#npm_publish
 add_version_tag ${version}
-npm_publish
 compile_css
 upload_css
 update_docs
