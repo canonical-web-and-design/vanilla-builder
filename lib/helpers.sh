@@ -30,10 +30,9 @@ function prepare_directories {
 
     update_git_dir ${FRAMEWORK_DIR} ${framework_repository} master
     update_git_dir ${HOMEPAGE_DIR} ${framework_repository} gh-pages
-    update_git_dir ${UPLOADER_DIR} ${uploader_repository} master
 }
 
-function increment_version_number {
+function increment_npm_version {
     release_level=$1
 
     cd ${FRAMEWORK_DIR}
@@ -42,25 +41,29 @@ function increment_version_number {
 }
 
 function add_version_tag {
-    echo "Not implemented"
-    exit 1
+    version=$1
+
+    cd ${FRAMEWORK_DIR}
 
     # Check this version doesn't exist
-    if [[ "$(git tag -l v${VERSION})" != "" ]]; then
+    if [[ "$(git tag -l v${version})" != "" ]]; then
         echo "This version already exists"
         exit 1
     fi
 
     # Set new tag
-    tag_name=v${VERSION}
+    tag_name=v${version}
     git tag -a ${tag_name} -m 'jenkins.ubuntu.qa: New release of guidelines'
     git push origin ${tag_name}
+
+    echo "Pushed tag ${tag_name}"
+
+    cd -
 }
 
 function npm_publish {
     echo "Not implemented"
     exit 1
-    
 }
 
 function compile_css {
