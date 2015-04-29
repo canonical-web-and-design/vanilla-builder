@@ -2,7 +2,7 @@
 
 set -ex
 
-source lib/helpers.sh
+source lib/functions.sh
 
  # Check this version doesn't exist
 if [[ -z "${RELEASE_LEVEL}" ]]; then
@@ -17,9 +17,10 @@ export LIB_DIR=`pwd`/lib
 export ASSETS_URL=https://162.213.32.143/v1/
 
 prepare_directories git@github.com:nottrobin/vanilla-framework.git
-version=$(increment_npm_version ${RELEASE_LEVEL} | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
+increment_npm_version ${RELEASE_LEVEL}
+new_version=$(increment_npm_version ${RELEASE_LEVEL})
 #npm_publish
-add_version_tag ${version}
+add_version_tag ${new_version}
 compile_css
 upload_css
 update_docs

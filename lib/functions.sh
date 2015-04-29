@@ -36,8 +36,12 @@ function increment_npm_version {
     release_level=$1
 
     cd ${FRAMEWORK_DIR}
-    ${LIB_DIR}/bump_package_version.py ${release_level}
-    cd -
+    new_version=$(${LIB_DIR}/bump_package_version.py ${release_level} | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
+    git commit --quiet package.json -m "Auto-incremented ${release_level} version number to ${new_version}"
+    git push --quiet origin master
+    cd - > /dev/null
+
+    echo ${new_version}
 }
 
 function add_version_tag {
