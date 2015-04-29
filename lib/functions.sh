@@ -72,25 +72,31 @@ function npm_publish {
 }
 
 function compile_css {
-    echo "Not implemented"
-    exit 1
-    
+    cd ${FRAMEWORK_DIR}
+
     # Install node stuff
     npm install 2> /dev/null
 
     # Compile CSS and docs
     node_modules/gulp/bin/gulp.js build
+
+    cd -
 }
 
 function upload_css {
-    echo "Not implemented"
-    exit 1
+    version=$1
+
+    server_url=$2
+    auth_token=$3
+
+    upload_command="${LIB_DIR}/upload-asset.py --server-url ${server_url}
+    --auth-token ${auth_token}"
+
+    echo ${upload_options}
 
     # Upload CSS to the assets server
-    export ASSETS_SERVER_URL=https://assets.staging.ubuntu.com/v1/
-    export ASSETS_SERVER_TOKEN=$(cat ~/.assets-server.token)
-    upload-asset build/css/ubuntu-styles.css --url-path guidelines-version-${VERSION}.css --tags "jenkins.ubuntu.qa guidelines"
-    upload-asset build/css/ubuntu-styles.min.css --url-path guidelines-version-${VERSION}.min.css --tags "jenkins.ubuntu.qa guidelines"
+    ${upload_command} ${FRAMEWORK_DIR}/build/css/build.css --url-path vanilla-framework-version-${version}.css --tags "jenkins.ubuntu.qa vanilla-framework expanded-css"
+    ${upload_command} ${FRAMEWORK_DIR}/build/css/build.min.css --url-path vanilla-framework-version-${version}.min.css --tags "jenkins.ubuntu.qa vanilla-framework minified-css"
 }
 
 function update_docs {
