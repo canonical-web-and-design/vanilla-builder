@@ -15,8 +15,9 @@ function update_git_dir {
     git_url=$2
     branch=$3
 
-    git clone ${git_url} ${dir_path} || (
+    git clone -b ${branch} ${git_url} ${dir_path} || (
         git -C ${dir_path} fetch origin \
+        && git -C ${HOMEPAGE_DIR} checkout ${branch} \
         && git -C ${dir_path} reset --hard origin/${branch}
     )
 }
@@ -26,7 +27,6 @@ function prepare_directories {
     # prepare_directories ${framework_repository} ${uploader_repository}
 
     framework_repository=$1
-    uploader_repository=$2
 
     update_git_dir ${FRAMEWORK_DIR} ${framework_repository} master
     update_git_dir ${HOMEPAGE_DIR} ${framework_repository} gh-pages
@@ -78,7 +78,7 @@ function compile_css {
     npm install 2> /dev/null
 
     # Compile CSS and docs
-    node_modules/gulp/bin/gulp.js build
+    node_modules/gulp/bin/gulp.js sasslint sass
 
     cd -
 }
@@ -100,14 +100,19 @@ function upload_css {
 }
 
 function update_docs {
-    echo "Not implemented"
-    exit 1
+    version=$1
 
-    rm -rf gh-pages/docs
-    mv master/build/docs gh-pages/docs
-    git -C gh-pages add .
-    git -C gh-pages commit -m "jenkins.ubuntu.com: Auto-generate docs for release v${VERSION}"
-    git -C gh-pages push origin gh-pages
+    cd ${FRAMEWORK_DIR}
+
+    npm install 2> /dev/null
+    node_modules/gulp/bin/gulp.js docs
+    cd -
+
+    rm -rf ${HOMEPAGE_DIR}/docs
+    mv ${FRAMEWORK_DIR}/build/docs ${HOMEPAGE_DIR}/docs
+    git -C ${HOMEPAGE_DIR} add .
+    git -C ${HOMEPAGE_DIR} commit -m "jenkins.ubuntu.com: Auto-generate docs for release v${version}"
+    git -C ${HOMEPAGE_DIR} push origin gh-pages
 }
 
 function update_project_homepage {
