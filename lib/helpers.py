@@ -47,6 +47,9 @@ def update_version(release_level, filename='package.json'):
     package['version'] = new_version
 
     for line in fileinput.input(filename, inplace=True):
-        print line.replace(old_version, new_version),
+        print line.replace(
+            '"version": "{}"'.format(old_version),
+            '"version": "{}"'.format(new_version)
+        ),
 
     return old_version, new_version
