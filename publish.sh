@@ -22,7 +22,7 @@ export LIB_DIR=`pwd`/lib
 
 prepare_directories ${framework_repository}
 new_version=$(increment_npm_version ${release_level})
-#npm_publish
+npm_publish
 add_version_tag ${new_version}
 compile_css
 upload_css ${new_version} ${assets_server_url} ${assets_server_token}
