@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+set -ex
 
 release_level=point
 framework_repository=git@github.com:nottrobin/vanilla-framework.git

@@ -1,4 +1,5 @@
 # System
+import fileinput
 import json
 import sys
 
@@ -45,7 +46,7 @@ def update_version(release_level, filename='package.json'):
     new_version = '.'.join(version_list)
     package['version'] = new_version
 
-    with open(filename, 'w') as f:
-        f.write(json.dumps(package, indent=4, sort_keys=True))
+    for line in fileinput.input(filename, inplace=True):
+        print line.replace(old_version, new_version),
 
     return old_version, new_version
