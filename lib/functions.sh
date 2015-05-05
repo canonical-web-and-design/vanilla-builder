@@ -33,6 +33,8 @@ function prepare_directories {
 }
 
 function increment_npm_version {
+    set -e
+
     release_level=$1
 
     cd ${FRAMEWORK_DIR}
