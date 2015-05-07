@@ -117,7 +117,7 @@ function update_docs {
     rm -rf ${HOMEPAGE_DIR}/docs
     mv ${FRAMEWORK_DIR}/build/docs ${HOMEPAGE_DIR}/docs
     git -C ${HOMEPAGE_DIR} add .
-    git -C ${HOMEPAGE_DIR} commit -m "jenkins.ubuntu.com: Auto-generate docs for release v${version}"
+    git -C ${HOMEPAGE_DIR} commit -m "jenkins.ubuntu.qa: Auto-generate docs for release v${version}"
     git -C ${HOMEPAGE_DIR} push origin gh-pages
 }
 
@@ -130,7 +130,7 @@ function update_project_homepage {
 <p>${version_description}</p>
 <p><a href=\"https://github.com/ubuntudesign/vanilla-framework/compare/v${old_version}...v${new_version}\">Changes since version ${old_version}</a></p>"
 
-    release_section="<section class=\"row no-border\" id=\"0.0.13\">
+    release_section="<section class=\"row\" id=\"0.0.13\">
 ${latest_release}
 </section>
 "
@@ -140,7 +140,7 @@ ${latest_release}
     all_releases="${release_section}
 $(cat _includes/all-releases.html)"
     echo "${all_releases}" > _includes/all-releases.html
-    git commit _includes/latest.html _includes/all-releases.html -m 'Jenkins: Auto-updating release information'
+    git commit _includes/latest.html _includes/all-releases.html -m 'jenkins.ubuntu.qa: Auto-update release information for release v${new_version}'
     git push origin gh-pages
     cd -
 }
