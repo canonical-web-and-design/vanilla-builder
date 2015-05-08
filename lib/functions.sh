@@ -138,7 +138,9 @@ ${latest_release}
 $(cat _includes/all-releases.html)"
     echo "${all_releases}" > _includes/all-releases.html
 
-    git commit index.html _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Update release information for release v${new_version}"
+    sleep 20
+
+    git commit index.html _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Auto-update release information for release v${new_version}"
     git push origin gh-pages
     cd -
 }
