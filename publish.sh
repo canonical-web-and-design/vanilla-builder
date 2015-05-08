@@ -27,8 +27,6 @@ update_info="$(increment_npm_version ${project_name} ${release_level})"
 old_version=$(echo "${update_info}" | grep 'Old version' | sed 's/Old version[:] \(\.*\)/\1/g')
 new_version=$(echo "${update_info}" | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
 
-npm_publish ${project_name}
-
 add_version_tag ${project_name} ${new_version}
 compile_css ${project_name}
 upload_css ${project_name} ${project_name} ${new_version} ${assets_server_url} ${assets_server_token}
@@ -38,3 +36,5 @@ if [[ -n "${update_homepage}" ]] && ${update_homepage}; then
     update_docs ${project_name} homepage ${new_version}
     update_project_homepage homepage ${old_version} ${new_version} "${release_description}"
 fi
+
+npm_publish ${project_name}
