@@ -145,9 +145,8 @@ function update_project_homepage {
 
     file_prefix="${project_name}-version-${new_version}"
 
-    latest_release="<h3>Version ${new_version}</h3>
+    latest_release="<h3>Version ${new_version} <small>(<a href=\"${server_url}${file_prefix}.min.css\">minified</a> | <a href=\"${server_url}${file_prefix}.css\">unminified</a>)</small></h3>
 <p>${version_description}</p>
-<p>Compiled CSS: <a href=\"${server_url}${file_prefix}.css\">unminified</a> | <a href=\"${server_url}${file_prefix}.min.css\">minified</a></p>
 <p><a href=\"https://github.com/ubuntudesign/vanilla-framework/compare/v${old_version}...v${new_version}\">Changes since version ${old_version}</a></p>"
 
     release_section="<section class=\"row\" id=\"0.0.13\">
