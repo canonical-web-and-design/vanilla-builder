@@ -20,21 +20,21 @@ assets_server_url=$5
 assets_server_token=$6
 update_homepage=$7
 
-# # Clone project
-# update_git_dir ${project_name} ${project_repository} master
+# Clone project
+update_git_dir ${project_name} ${project_repository} master
 
 update_info="$(increment_npm_version ${project_name} ${release_level})"
 old_version=$(echo "${update_info}" | grep 'Old version' | sed 's/Old version[:] \(\.*\)/\1/g')
 new_version=$(echo "${update_info}" | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
 
-# # npm_publish ${project_name}
+npm_publish ${project_name}
 
-# add_version_tag ${project_name} ${new_version}
-# compile_css ${project_name}
-# upload_css ${project_name} ${project_name} ${new_version} ${assets_server_url} ${assets_server_token}
+add_version_tag ${project_name} ${new_version}
+compile_css ${project_name}
+upload_css ${project_name} ${project_name} ${new_version} ${assets_server_url} ${assets_server_token}
 
 if [[ -n "${update_homepage}" ]] && ${update_homepage}; then
-    # update_git_dir homepage ${project_repository} gh-pages
-    # update_docs ${project_name} homepage ${new_version}
+    update_git_dir homepage ${project_repository} gh-pages
+    update_docs ${project_name} homepage ${new_version}
     update_project_homepage homepage ${old_version} ${new_version} "${release_description}"
 fi
