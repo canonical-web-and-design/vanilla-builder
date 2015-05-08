@@ -106,8 +106,6 @@ function update_docs {
     version=$3
 
     cd ${project_path}
-
-    npm update
     node_modules/gulp/bin/gulp.js docs
     cd -
 
