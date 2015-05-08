@@ -133,21 +133,12 @@ ${latest_release}
 
     cd ${homepage_path}
 
-    # Update includes
     echo "${latest_release}" > _includes/latest.html
     all_releases="${release_section}
 $(cat _includes/all-releases.html)"
     echo "${all_releases}" > _includes/all-releases.html
 
-    # Add comment to index.html to force refresh of github page
-    regex="<!-- Latest release: [0-9.]* -->"
-    if ! egrep "${regex}" index.html; then
-        echo "Can't find release comment in index.html. Exiting."
-        exit 1
-    fi
-    sed -i 's/'"${regex}"'/<!-- Latest release: '"${new_version}"' -->/' index.html
-
-    git commit index.html _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Auto-update release information for release v${new_version}"
+    git commit index.html _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Update release information for release v${new_version}"
     git push origin gh-pages
     cd -
 }
