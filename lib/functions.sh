@@ -135,6 +135,24 @@ function update_docs {
     git -C ${homepage_path} push origin gh-pages
 }
 
+function update_demo {
+    project_path=$1
+    homepage_path=$2
+    project_name=$3
+    version=$4
+    server_url=$5
+
+    url=${server_url}${project_name}-version-${version}.min.css
+
+    cp ${project_path}/demo/index.html ${homepage_path}/demo/index.html
+
+    cd ${homepage_path}
+    sed -i 's@../build/css/build.css@'"${url}"'@' demo/index.html
+    git commit demo/index.html -m 'jenkins.ubuntu.qa: Auto-update demo page'
+    git push origin gh-pages
+    cd -
+}
+
 function update_project_homepage {
     homepage_path=$1
     project_name=$2
