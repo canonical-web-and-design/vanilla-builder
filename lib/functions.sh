@@ -107,13 +107,13 @@ function update_docs {
 
     cd ${project_path}
 
-    npm install 2> /dev/null
+    npm update
     node_modules/gulp/bin/gulp.js docs
     cd -
 
     rm -rf ${homepage_path}/docs
     mv ${project_path}/build/docs ${homepage_path}/docs
-    git -C ${homepage_path} add .
+    git -C ${homepage_path} add docs
     git -C ${homepage_path} commit -m "jenkins.ubuntu.qa: Auto-generate docs for release v${version}"
     git -C ${homepage_path} push origin gh-pages
 }
@@ -134,11 +134,22 @@ ${latest_release}
 "
 
     cd ${homepage_path}
+
+    # Update includes
     echo "${latest_release}" > _includes/latest.html
     all_releases="${release_section}
 $(cat _includes/all-releases.html)"
     echo "${all_releases}" > _includes/all-releases.html
-    git commit _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Auto-update release information for release v${new_version}"
+
+    # Add comment to index.html to force refresh of github page
+    regex="<!-- Latest release: [0-9.]* -->"
+    if ! egrep "${regex}" index.html; then
+        echo "Can't find release comment in index.html. Exiting."
+        exit 1
+    fi
+    sed -i 's/'"${regex}"'/<!-- Latest release: '"${new_version}"' -->/' index.html
+
+    git commit index.html _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Auto-update release information for release v${new_version}"
     git push origin gh-pages
     cd -
 }
