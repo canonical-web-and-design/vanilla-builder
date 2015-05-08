@@ -38,12 +38,16 @@ function increment_npm_version {
     release_level=$1
 
     cd ${FRAMEWORK_DIR}
-    new_version=$(${LIB_DIR}/bump_package_version.py ${release_level} | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
-    git commit --quiet package.json -m "Auto-incremented ${release_level} version number to ${new_version}"
+    update_info="$(${LIB_DIR}/bump_package_version.py ${release_level})"
+
+    message="Auto-incremented ${release_level} version number
+${update_info}"
+
+    git commit --quiet package.json -m "${message}"
     git push --quiet origin master
     cd - > /dev/null
 
-    echo ${new_version}
+    echo "${update_info}"
 }
 
 function add_version_tag {
@@ -113,11 +117,30 @@ function update_docs {
     rm -rf ${HOMEPAGE_DIR}/docs
     mv ${FRAMEWORK_DIR}/build/docs ${HOMEPAGE_DIR}/docs
     git -C ${HOMEPAGE_DIR} add .
-    git -C ${HOMEPAGE_DIR} commit -m "jenkins.ubuntu.com: Auto-generate docs for release v${version}"
+    git -C ${HOMEPAGE_DIR} commit -m "jenkins.ubuntu.qa: Auto-generate docs for release v${version}"
     git -C ${HOMEPAGE_DIR} push origin gh-pages
 }
 
 function update_project_homepage {
-    echo "Not implemented"
-    exit 1
+    old_version=$1
+    new_version=$2
+    version_description=$3
+
+    latest_release="<h3>Version ${new_version}</h3>
+<p>${version_description}</p>
+<p><a href=\"https://github.com/ubuntudesign/vanilla-framework/compare/v${old_version}...v${new_version}\">Changes since version ${old_version}</a></p>"
+
+    release_section="<section class=\"row\" id=\"0.0.13\">
+${latest_release}
+</section>
+"
+
+    cd ${HOMEPAGE_DIR}
+    echo "${latest_release}" > _includes/latest.html
+    all_releases="${release_section}
+$(cat _includes/all-releases.html)"
+    echo "${all_releases}" > _includes/all-releases.html
+    git commit _includes/latest.html _includes/all-releases.html -m 'jenkins.ubuntu.qa: Auto-update release information for release v${new_version}'
+    git push origin gh-pages
+    cd -
 }
