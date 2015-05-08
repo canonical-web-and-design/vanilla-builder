@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
-# All script in here should make use of:
-# - ${FRAMEWORK_DIR}
-# - ${HOMEPAGE_DIR}
-# - ${UPLOADER_DIR}
-# - ${LIB_DIR}
+LIB_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 function update_git_dir {
     # Update a git dir, either by cloning it or pulling changes down
@@ -16,28 +12,21 @@ function update_git_dir {
     branch=$3
 
     git clone -b ${branch} ${git_url} ${dir_path} || (
-        git -C ${dir_path} fetch origin \
-        && git -C ${HOMEPAGE_DIR} checkout ${branch} \
-        && git -C ${dir_path} reset --hard origin/${branch}
+        git -C ${dir_path} clean -fd
+        git -C ${dir_path} remote set-url origin ${git_url}
+        git -C ${dir_path} fetch origin
+        git -C ${dir_path} checkout ${branch}
+        git -C ${dir_path} reset --hard origin/${branch}
     )
-}
-
-function prepare_directories {
-    # Prepare the three directories for the build
-    # prepare_directories ${framework_repository} ${uploader_repository}
-
-    framework_repository=$1
-
-    update_git_dir ${FRAMEWORK_DIR} ${framework_repository} master
-    update_git_dir ${HOMEPAGE_DIR} ${framework_repository} gh-pages
 }
 
 function increment_npm_version {
     set -e
 
-    release_level=$1
+    project_path=$1
+    release_level=$2
 
-    cd ${FRAMEWORK_DIR}
+    cd ${project_path}
     update_info="$(${LIB_DIR}/bump_package_version.py ${release_level})"
 
     message="Auto-incremented ${release_level} version number
@@ -51,9 +40,10 @@ ${update_info}"
 }
 
 function add_version_tag {
-    version=$1
+    project_path=$1
+    version=$2
 
-    cd ${FRAMEWORK_DIR}
+    cd ${project_path}
 
     # Check this version doesn't exist
     if [[ "$(git tag -l v${version})" != "" ]]; then
@@ -72,16 +62,20 @@ function add_version_tag {
 }
 
 function npm_publish {
-    cd ${FRAMEWORK_DIR}
+    project_path=$1
+
+    cd ${project_path}
     npm publish
     cd -
 }
 
 function compile_css {
-    cd ${FRAMEWORK_DIR}
+    project_path=$1
+
+    cd ${project_path}
 
     # Install node stuff
-    npm install 2> /dev/null
+    npm update
 
     # Compile CSS and docs
     node_modules/gulp/bin/gulp.js sasslint sass
@@ -90,10 +84,11 @@ function compile_css {
 }
 
 function upload_css {
-    version=$1
-
-    server_url=$2
-    auth_token=$3
+    project_name=$1
+    project_path=$2
+    version=$3
+    server_url=$4
+    auth_token=$5
 
     upload_command="${LIB_DIR}/upload-asset.py --server-url ${server_url}
     --auth-token ${auth_token}"
@@ -101,30 +96,33 @@ function upload_css {
     echo ${upload_options}
 
     # Upload CSS to the assets server
-    ${upload_command} ${FRAMEWORK_DIR}/build/css/build.css --url-path vanilla-framework-version-${version}.css --tags "jenkins.ubuntu.qa vanilla-framework expanded-css"
-    ${upload_command} ${FRAMEWORK_DIR}/build/css/build.min.css --url-path vanilla-framework-version-${version}.min.css --tags "jenkins.ubuntu.qa vanilla-framework minified-css"
+    ${upload_command} ${project_path}/build/css/build.css --url-path ${project_name}-version-${version}.css --tags "jenkins.ubuntu.qa vanilla-framework expanded-css"
+    ${upload_command} ${project_path}/build/css/build.min.css --url-path ${project_name}-version-${version}.min.css --tags "jenkins.ubuntu.qa vanilla-framework minified-css"
 }
 
 function update_docs {
-    version=$1
+    project_path=$1
+    homepage_path=$2
+    version=$3
 
-    cd ${FRAMEWORK_DIR}
+    cd ${project_path}
 
     npm install 2> /dev/null
     node_modules/gulp/bin/gulp.js docs
     cd -
 
-    rm -rf ${HOMEPAGE_DIR}/docs
-    mv ${FRAMEWORK_DIR}/build/docs ${HOMEPAGE_DIR}/docs
-    git -C ${HOMEPAGE_DIR} add .
-    git -C ${HOMEPAGE_DIR} commit -m "jenkins.ubuntu.qa: Auto-generate docs for release v${version}"
-    git -C ${HOMEPAGE_DIR} push origin gh-pages
+    rm -rf ${homepage_path}/docs
+    mv ${project_path}/build/docs ${homepage_path}/docs
+    git -C ${homepage_path} add .
+    git -C ${homepage_path} commit -m "jenkins.ubuntu.qa: Auto-generate docs for release v${version}"
+    git -C ${homepage_path} push origin gh-pages
 }
 
 function update_project_homepage {
-    old_version=$1
-    new_version=$2
-    version_description=$3
+    homepage_path=$1
+    old_version=$2
+    new_version=$3
+    version_description=$4
 
     latest_release="<h3>Version ${new_version}</h3>
 <p>${version_description}</p>
@@ -135,12 +133,12 @@ ${latest_release}
 </section>
 "
 
-    cd ${HOMEPAGE_DIR}
+    cd ${homepage_path}
     echo "${latest_release}" > _includes/latest.html
     all_releases="${release_section}
 $(cat _includes/all-releases.html)"
     echo "${all_releases}" > _includes/all-releases.html
-    git commit _includes/latest.html _includes/all-releases.html -m 'jenkins.ubuntu.qa: Auto-update release information for release v${new_version}'
+    git commit _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Auto-update release information for release v${new_version}"
     git push origin gh-pages
     cd -
 }

@@ -1,5 +1,8 @@
 package.json
-framework/
+vanilla-framework/
+ubuntu-vanilla-theme/
+canonical-vanilla-theme/
+cloud-vanilla-theme/
 homepage/
 uploader/
 *.pyc

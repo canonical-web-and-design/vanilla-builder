@@ -7,30 +7,34 @@ source lib/functions.sh
  # Check this version doesn't exist
 if [[ -z "${4}" ]]; then
     echo 'Not all options specified.'
-    echo 'Usage: publish.sh ${FRAMEWORK_REPOSITORY} ${RELEASE_LEVEL} ${RELEASE_DESCRIPTION} ${ASSETS_SERVER_URL} ${ASSETS_SERVER_TOKEN}'
+    echo 'Usage: publish.sh ${PROJECT_NAME} ${PROJECT_REPOSITORY} ${RELEASE_LEVEL} ${RELEASE_DESCRIPTION} ${ASSETS_SERVER_URL} ${ASSETS_SERVER_TOKEN}'
     exit 1
 fi
 
 # Settings
-export framework_repository=$1
-export release_level=$2
-export release_description=$3
-export assets_server_url=$4
-export assets_server_token=$5
-export FRAMEWORK_DIR=`pwd`/framework
-export HOMEPAGE_DIR=`pwd`/homepage
-export LIB_DIR=`pwd`/lib
+project_name=$1
+project_repository=$2
+release_level=$3
+release_description=$4
+assets_server_url=$5
+assets_server_token=$6
+update_homepage=$7
 
-prepare_directories ${framework_repository}
+# Clone project
+update_git_dir ${project_name} ${project_repository} master
 
-update_info="$(increment_npm_version ${release_level})"
+update_info="$(increment_npm_version ${project_name} ${release_level})"
 old_version=$(echo "${update_info}" | grep 'Old version' | sed 's/Old version[:] \(\.*\)/\1/g')
 new_version=$(echo "${update_info}" | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
 
-npm_publish
+npm_publish ${project_name}
 
-add_version_tag ${new_version}
-compile_css
-upload_css ${new_version} ${assets_server_url} ${assets_server_token}
-update_docs ${new_version}
-update_project_homepage ${old_version} ${new_version} "${release_description}"
+add_version_tag ${project_name} ${new_version}
+compile_css ${project_name}
+upload_css ${project_name} ${project_name} ${new_version} ${assets_server_url} ${assets_server_token}
+
+if [[ -n "${update_homepage}" ]] && ${update_homepage}; then
+    update_git_dir homepage ${project_repository} gh-pages
+    update_docs ${project_name} homepage ${new_version}
+    update_project_homepage homepage ${old_version} ${new_version} "${release_description}"
+fi
