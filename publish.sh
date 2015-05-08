@@ -27,7 +27,7 @@ update_info="$(increment_npm_version ${release_level})"
 old_version=$(echo "${update_info}" | grep 'Old version' | sed 's/Old version[:] \(\.*\)/\1/g')
 new_version=$(echo "${update_info}" | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
 
-npm_publish
+# npm_publish
 
 add_version_tag ${new_version}
 compile_css
