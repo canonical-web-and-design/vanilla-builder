@@ -67,6 +67,8 @@ function npm_publish {
     cd ${project_path}
     npm publish
     cd -
+
+    echo "\n\n====\nPublished to NPM: https://www.npmjs.com/package/${project_path}\n===\n\n"
 }
 
 function compile_css {
@@ -138,9 +140,14 @@ ${latest_release}
 $(cat _includes/all-releases.html)"
     echo "${all_releases}" > _includes/all-releases.html
 
+    # Waiting 20 seconds, to make Github page builder happy
     sleep 20
 
     git commit index.html _includes/latest.html _includes/all-releases.html -m "jenkins.ubuntu.qa: Auto-update release information for release v${new_version}"
     git push origin gh-pages
+
+    url=http://$(git config --get remote.origin.url | sed 's@.*:\(.*\)/\(.*\)\.git@\1.github.io/\2@')
+
+    echo -e "\n\n====\nNew homepage content published to: ${url}\n====\n\n"
     cd -
 }
