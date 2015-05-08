@@ -68,7 +68,13 @@ function npm_publish {
     npm publish
     cd -
 
-    echo "\n\n====\nPublished to NPM: https://www.npmjs.com/package/${project_path}\n===\n\n"
+    echo "
+
+====
+Published to NPM: https://www.npmjs.com/package/${project_path}
+===
+
+"
 }
 
 function compile_css {
@@ -100,6 +106,16 @@ function upload_css {
     # Upload CSS to the assets server
     ${upload_command} ${project_path}/build/css/build.css --url-path ${project_name}-version-${version}.css --tags "jenkins.ubuntu.qa vanilla-framework expanded-css"
     ${upload_command} ${project_path}/build/css/build.min.css --url-path ${project_name}-version-${version}.min.css --tags "jenkins.ubuntu.qa vanilla-framework minified-css"
+
+    echo -e "
+
+===
+Uploaded compiled CSS
+Expanded: ${server_url}v1/${project_name}-version-${version}.css
+Minified: ${server_url}v1/${project_name}-version-${version}.min.css
+===
+
+"
 }
 
 function update_docs {
@@ -148,6 +164,12 @@ $(cat _includes/all-releases.html)"
 
     url=http://$(git config --get remote.origin.url | sed 's@.*:\(.*\)/\(.*\)\.git@\1.github.io/\2@')
 
-    echo -e "\n\n====\nNew homepage content published to: ${url}\n====\n\n"
+    echo -e "
+
+====
+New homepage content published to: ${url}
+====
+
+"
     cd -
 }
