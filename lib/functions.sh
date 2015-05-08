@@ -111,8 +111,8 @@ function upload_css {
 
 ===
 Uploaded compiled CSS
-Expanded: ${server_url}v1/${project_name}-version-${version}.css
-Minified: ${server_url}v1/${project_name}-version-${version}.min.css
+Expanded: ${server_url}${project_name}-version-${version}.css
+Minified: ${server_url}${project_name}-version-${version}.min.css
 ===
 
 "
