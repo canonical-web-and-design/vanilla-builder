@@ -100,19 +100,20 @@ function upload_css {
 
     upload_command="${LIB_DIR}/upload-asset.py --server-url ${server_url}
     --auth-token ${auth_token}"
+    file_prefix="${project_name}-version-${version}"
 
     echo ${upload_options}
 
     # Upload CSS to the assets server
-    ${upload_command} ${project_path}/build/css/build.css --url-path ${project_name}-version-${version}.css --tags "jenkins.ubuntu.qa vanilla-framework expanded-css"
-    ${upload_command} ${project_path}/build/css/build.min.css --url-path ${project_name}-version-${version}.min.css --tags "jenkins.ubuntu.qa vanilla-framework minified-css"
+    ${upload_command} ${project_path}/build/css/build.css --url-path ${file_prefix}.css --tags "jenkins.ubuntu.qa vanilla-framework expanded-css"
+    ${upload_command} ${project_path}/build/css/build.min.css --url-path ${file_prefix}.min.css --tags "jenkins.ubuntu.qa vanilla-framework minified-css"
 
     echo -e "
 
 ===
 Uploaded compiled CSS
-Expanded: ${server_url}${project_name}-version-${version}.css
-Minified: ${server_url}${project_name}-version-${version}.min.css
+Expanded: ${server_url}${file_prefix}.css
+Minified: ${server_url}${file_prefix}.min.css
 ===
 
 "
@@ -136,12 +137,17 @@ function update_docs {
 
 function update_project_homepage {
     homepage_path=$1
-    old_version=$2
-    new_version=$3
-    version_description=$4
+    project_name=$2
+    old_version=$3
+    new_version=$4
+    version_description=$5
+    server_url=$6
+
+    file_prefix="${project_name}-version-${new_version}"
 
     latest_release="<h3>Version ${new_version}</h3>
 <p>${version_description}</p>
+<p>Compiled CSS: <a href=\"${server_url}${file_prefix}.css\">unminified</a> | <a href=\"${server_url}${file_prefix}.min.css\">minified</a></p>
 <p><a href=\"https://github.com/ubuntudesign/vanilla-framework/compare/v${old_version}...v${new_version}\">Changes since version ${old_version}</a></p>"
 
     release_section="<section class=\"row\" id=\"0.0.13\">

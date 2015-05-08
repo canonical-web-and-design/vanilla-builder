@@ -35,7 +35,7 @@ upload_css ${project_name} ${project_name} ${new_version} ${assets_server_url} $
 if [[ -n "${update_homepage}" ]] && ${update_homepage}; then
     update_git_dir homepage ${project_repository} gh-pages
     update_docs ${project_name} homepage ${new_version}
-    update_project_homepage homepage ${old_version} ${new_version} "${release_description}"
+    update_project_homepage homepage ${project_name} ${old_version} ${new_version} "${release_description}" ${assets_server_url}
 fi
 
 if [[ -n "${publish_to_npm}" ]] && ${publish_to_npm}; then
