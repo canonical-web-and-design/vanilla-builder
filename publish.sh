@@ -24,13 +24,18 @@ publish_to_npm=$8
 # Clone project
 update_git_dir ${project_name} ${project_repository} master
 
+# Get new version number and update package.json
 update_info="$(increment_npm_version ${project_name} ${release_level})"
 old_version=$(echo "${update_info}" | grep 'Old version' | sed 's/Old version[:] \(\.*\)/\1/g')
 new_version=$(echo "${update_info}" | grep 'New version' | sed 's/New version[:] \(\.*\)/\1/g')
 
-add_version_tag ${project_name} ${new_version}
+# Upload new CSS version to assets
 compile_css ${project_name}
 upload_css ${project_name} ${project_name} ${new_version} ${assets_server_url} ${assets_server_token}
+
+# Commit version increment
+commit_npm_increment ${project_name} ${release_level} ${new_version}
+add_version_tag ${project_name} ${new_version}
 
 if [[ -n "${update_homepage}" ]] && ${update_homepage}; then
     update_git_dir homepage ${project_repository} gh-pages

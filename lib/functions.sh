@@ -28,15 +28,20 @@ function increment_npm_version {
 
     cd ${project_path}
     update_info="$(${LIB_DIR}/bump_package_version.py ${release_level})"
-
-    message="Auto-incremented ${release_level} version number
-${update_info}"
-
-    git commit --quiet package.json -m "${message}"
-    git push --quiet origin master
     cd - > /dev/null
 
     echo "${update_info}"
+}
+
+function commit_npm_increment {
+    project_path=$1
+    release_level=$2
+    version=$3
+
+    message="Auto-incremented ${release_level} version number to ${version}"
+
+    git -C ${project_path} commit --quiet package.json -m "${message}"
+    git -C ${project_path} push --quiet origin master
 }
 
 function add_version_tag {
