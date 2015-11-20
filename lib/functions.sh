@@ -88,6 +88,7 @@ function compile_css {
     cd ${project_path}
 
     # Install node stuff
+    npm install
     npm update
 
     # Compile CSS and docs
