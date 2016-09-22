@@ -1,3 +1,7 @@
+# DEPRECATED - NO LONGER USED
+
+---
+
 # Jenkins builder for the Vanilla framework
 
 Example usage:
